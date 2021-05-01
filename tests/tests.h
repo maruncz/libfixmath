@@ -1,6 +1,7 @@
 #ifndef TESTS_H
 #define TESTS_H
 
+#include <inttypes.h>
 #include <libfixmath/fix16.h>
 #include <math.h>
 #include <stdio.h>
@@ -57,19 +58,20 @@ extern unsigned stack_depth;
         }                                                                    \
     } while (0)
 
-#define ASSERT_EQ_INT(a, b)                                                  \
-    do                                                                       \
-    {                                                                        \
-        if ((a) != (b))                                                      \
-        {                                                                    \
-            fflush(stdout);                                                  \
-            fflush(stderr);                                                  \
-            fprintf(stderr,                                                  \
-                    "\033[31;1m FAILED:\033[22;39m%*sASSERT_EQ a: %i, b: "   \
-                    "%i\033[0m at: %s(), " __FILE__ ":" STR2(__LINE__) "\n", \
-                    stack_depth, "", (a), (b), __func__);                    \
-            return 1;                                                        \
-        }                                                                    \
+#define ASSERT_EQ_INT(a, b)                                                 \
+    do                                                                      \
+    {                                                                       \
+        if ((a) != (b))                                                     \
+        {                                                                   \
+            fflush(stdout);                                                 \
+            fflush(stderr);                                                 \
+            fprintf(stderr,                                                 \
+                    "\033[31;1m FAILED:\033[22;39m%*sASSERT_EQ a: %" PRIi32 \
+                    ", b: %" PRIi32 "\033[0m at: %s(), " __FILE__           \
+                    ":" STR2(__LINE__) "\n",                                \
+                    stack_depth, "", (a), (b), __func__);                   \
+            return 1;                                                       \
+        }                                                                   \
     } while (0)
 
 #define ASSERT_EQ_STR(a, b)                                                  \

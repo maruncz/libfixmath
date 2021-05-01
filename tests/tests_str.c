@@ -44,13 +44,13 @@ int test_str_from()
     ASSERT_EQ_INT(fix16_from_str("   +1234,56780   "),
                   fix16_from_dbl(1234.5678));
 
-    ASSERT_EQ_INT(fix16_from_str("0"), 0);
+    ASSERT_EQ_INT(fix16_from_str("0"), (uint32_t)0);
     ASSERT_EQ_INT(fix16_from_str("1"), fix16_one);
     ASSERT_EQ_INT(fix16_from_str("1.0"), fix16_one);
     ASSERT_EQ_INT(fix16_from_str("1.0000000000"), fix16_one);
 
-    ASSERT_EQ_INT(fix16_from_str("0.00002"), 1);
-    ASSERT_EQ_INT(fix16_from_str("0.99998"), 65535);
+    ASSERT_EQ_INT(fix16_from_str("0.00002"), (uint32_t)1);
+    ASSERT_EQ_INT(fix16_from_str("0.99998"), (uint32_t)65535);
 
     ASSERT_EQ_INT(fix16_from_str("32767.99998"), fix16_maximum);
     ASSERT_EQ_INT(fix16_from_str("-32768.00000"), fix16_minimum);
@@ -80,15 +80,16 @@ int test_str_extended()
 
         if (strcmp(goodbuf, testbuf) != 0)
         {
-            printf("Value (fix16_t)%d gave %s, should be %s\n", value, testbuf,
-                   goodbuf);
+            printf("Value (fix16_t)%" PRIi32 " gave %s, should be %s\n", value,
+                   testbuf, goodbuf);
             return 1;
         }
 
         fix16_t roundtrip = fix16_from_str(testbuf);
         if (roundtrip != value)
         {
-            printf("Roundtrip failed: (fix16_t)%d -> %s -> (fix16_t)%d\n",
+            printf("Roundtrip failed: (fix16_t)%" PRIi32
+                   " -> %s -> (fix16_t)%" PRIi32 "\n",
                    value, testbuf, roundtrip);
             return 1;
         }

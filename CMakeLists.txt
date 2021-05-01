@@ -2,13 +2,17 @@ cmake_minimum_required(VERSION 3.5)
 
 project(libfixmath LANGUAGES CXX C)
 
+SET(COMMON_FLAGS "-Wall -pedantic -Wextra -ffunction-sections -fdata-sections")
+
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_FLAGS "-Wall -pedantic -Wextra -Werror=return-type")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_FLAGS}")
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "-Wall -pedantic -Wextra -Werror=return-type")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_FLAGS}")
+
+SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-gc-sections,--print-memory-usage")
 
 include(libfixmath/libfixmath.cmake)
 include(tests/tests.cmake)

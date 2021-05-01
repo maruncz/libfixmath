@@ -170,7 +170,7 @@ fix16_t fix16_mul(fix16_t inArg0, fix16_t inArg1)
  * Uses 8*8->16bit multiplications, and also skips any bytes that
  * are zero.
  */
-#if defined(FIXMATH_OPTIMIZE_8BIT)
+#if defined(FIXMATH_OPTIMIZE_8BIT) && !defined (FIXMATH_OPTIMIZE_AVR)
 fix16_t fix16_mul(fix16_t inArg0, fix16_t inArg1)
 {
 	uint32_t _a = (inArg0 >= 0) ? inArg0 : (-inArg0);
@@ -247,6 +247,24 @@ fix16_t fix16_mul(fix16_t inArg0, fix16_t inArg1)
 	}
 	
 	return result;
+}
+#endif
+
+/* 8-bit implementation of fix16_mul. Fastest on e.g. Atmel AVR.
+ * Uses 8*8->16bit multiplications, and also skips any bytes that
+ * are zero.
+ */
+#if defined(FIXMATH_OPTIMIZE_8BIT)
+fix16_t fix16_mul(fix16_t inArg0, fix16_t inArg1)
+{
+
+#ifdef FIXMATH_NO_OVERFLOW
+    _Accum result = __mulsa3(inArg0,inArg1);
+#else
+    _Accum result = __ssmulsa3(inArg0,inArg1);
+#endif
+
+    return result;
 }
 #endif
 

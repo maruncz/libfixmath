@@ -21,7 +21,17 @@ extern "C"
 # endif
 #endif
 
+#ifdef FIXMATH_OPTIMIZE_AVR
+#define FIXMATH_NO_CACHE
+#ifndef FIXMATH_OPTIMIZE_8BIT
+#define FIXMATH_OPTIMIZE_8BIT
+#endif
+#endif
+
 #include <stdint.h>
+#ifdef FIXMATH_OPTIMIZE_AVR
+#include <stdfix.h>
+#endif
 
 typedef int32_t fix16_t;
 
