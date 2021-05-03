@@ -6,6 +6,17 @@
 #include "tests_str.h"
 #include <stdio.h>
 
+#ifdef FIXMATH_OPTIMIZE_AVR
+#    define special_output_port (*((volatile char *)0x20))
+static int output_char(char c, FILE *stream)
+{
+    special_output_port = c;
+    return 0;
+}
+
+static FILE mystdout = FDEV_SETUP_STREAM(output_char, NULL, _FDEV_SETUP_WRITE);
+#endif
+
 const fix16_t testcases[] = {
     // Small numbers
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10,
@@ -40,33 +51,18 @@ unsigned stack_depth = 0;
 
 int main()
 {
-    printf("\033[1;34m\nVARIANT: \033[39m" STR2(PREFIX) "\033[0m\n");
-#if 0
-    fix16_t a      = 65536;
-    fix16_t b      = -2147483648;
-    fix16_t result = fix16_div(a, b);
-
-    double fa      = fix16_to_dbl(a);
-    double fb      = fix16_to_dbl(b);
-    double fresult = fa / fb;
-
-    double max = fix16_to_dbl(fix16_maximum);
-    double min = fix16_to_dbl(fix16_minimum);
-
-    printf("result  %i, %.20f\n", result, fix16_to_dbl(result));
-    printf("fresult %i, %.20f\n", fix16_from_dbl(fresult), fresult);
-
-    if ((fa / fb) > max || (fa / fb) < min)
-    {
-#ifndef FIXMATH_NO_OVERFLOW
-        ASSERT_EQ_INT(result, fix16_overflow);
+#ifdef FIXMATH_OPTIMIZE_AVR
+    stdout = &mystdout;
+    stderr = &mystdout;
 #endif
-    }
-    else
-    {
-        ASSERT_NEAR_DOUBLE(fresult, fix16_to_dbl(result),
-                           fix16_to_dbl(fix16_eps), "%i / %i \n", a, b);
-    }
+    printf("\033[1;34m\nVARIANT: \033[39m" STR2(PREFIX) "\033[0m\n");
+#if 1
+
+    _Accum a = 5.0k;
+    _Accum b = 5.0k;
+    _Accum c = a*b;
+
+    printf("a: %"PRIi32" b: %"PRIi32" c: %"PRIi32"\n",a,b,c);
 
 #else
     TEST(test_abs());
@@ -77,7 +73,7 @@ int main()
     TEST(test_sqrt());
     TEST(test_lerp());
     TEST(test_macros());
-    //TEST(test_str());
+    // TEST(test_str());
 #endif
     return 0;
 }

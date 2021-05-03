@@ -37,17 +37,15 @@ int test_add_short(void)
     {
         for (unsigned j = 0; j < TESTCASES_COUNT; ++j)
         {
-            fix16_t a      = testcases[i];
-            fix16_t b      = testcases[j];
+            fix16_t a      = 1;
+            fix16_t b      = 2147483647;
             fix16_t result = fix16_add(a, b);
 
-            double fa      = fix16_to_dbl(a);
-            double fb      = fix16_to_dbl(b);
-            double fresult = fa + fb;
+            int32_t ia      = a;
+            int32_t ib      = b;
+            int32_t iresult = ia + ib;
 
-            double max = fix16_to_dbl(fix16_maximum);
-            double min = fix16_to_dbl(fix16_minimum);
-            if ((fa + fb > max) || (fa + fb < min))
+            if ((ia + ib > fix16_maximum) || (ia + ib < fix16_minimum))
             {
 #ifndef FIXMATH_NO_OVERFLOW
                 ASSERT_EQ_INT(result, fix16_overflow);
@@ -55,8 +53,7 @@ int test_add_short(void)
             }
             else
             {
-                ASSERT_NEAR_DOUBLE(fresult, fix16_to_dbl(result),
-                                   fix16_to_dbl(fix16_eps), "%f + %f", fa, fb);
+                ASSERT_EQ_INT(iresult, result);
             }
         }
     }
@@ -80,16 +77,16 @@ int test_mul_specific(void)
     ASSERT_EQ_INT(fix16_mul(fix16_from_int(5), fix16_from_int(-5)),
                   fix16_from_int(-25));
 
-    ASSERT_EQ_INT(fix16_mul(0, 10), 0);
-    ASSERT_EQ_INT(fix16_mul(2, 0x8000), 1);
-    ASSERT_EQ_INT(fix16_mul(-2, 0x8000), -1);
+    ASSERT_EQ_INT(fix16_mul(0, 10), (int32_t)0);
+    ASSERT_EQ_INT(fix16_mul(2, 0x8000), (int32_t)1);
+    ASSERT_EQ_INT(fix16_mul(-2, 0x8000), (int32_t)-1);
 #ifndef FIXMATH_NO_ROUNDING
-    ASSERT_EQ_INT(fix16_mul(3, 0x8000), 2);
-    ASSERT_EQ_INT(fix16_mul(2, 0x7FFF), 1);
-    ASSERT_EQ_INT(fix16_mul(-2, 0x8001), -1);
-    ASSERT_EQ_INT(fix16_mul(-3, 0x8000), -2);
-    ASSERT_EQ_INT(fix16_mul(-2, 0x7FFF), -1);
-    ASSERT_EQ_INT(fix16_mul(2, 0x8001), 1);
+    ASSERT_EQ_INT(fix16_mul(3, 0x8000), (int32_t)2);
+    ASSERT_EQ_INT(fix16_mul(2, 0x7FFF), (int32_t)1);
+    ASSERT_EQ_INT(fix16_mul(-2, 0x8001), (int32_t)-1);
+    ASSERT_EQ_INT(fix16_mul(-3, 0x8000), (int32_t)-2);
+    ASSERT_EQ_INT(fix16_mul(-2, 0x7FFF), (int32_t)-1);
+    ASSERT_EQ_INT(fix16_mul(2, 0x8001), (int32_t)1);
 #endif
     return 0;
 }
@@ -146,19 +143,19 @@ int test_div_specific()
                   fix16_from_int(-3));
 
 #ifndef FIXMATH_NO_ROUNDING
-    ASSERT_EQ_INT(fix16_div(0, 10), 0);
-    ASSERT_EQ_INT(fix16_div(1, fix16_from_int(2)), 1);
-    ASSERT_EQ_INT(fix16_div(-1, fix16_from_int(2)), -1);
-    ASSERT_EQ_INT(fix16_div(1, fix16_from_int(-2)), -1);
-    ASSERT_EQ_INT(fix16_div(-1, fix16_from_int(-2)), 1);
-    ASSERT_EQ_INT(fix16_div(3, fix16_from_int(2)), 2);
-    ASSERT_EQ_INT(fix16_div(-3, fix16_from_int(2)), -2);
-    ASSERT_EQ_INT(fix16_div(3, fix16_from_int(-2)), -2);
-    ASSERT_EQ_INT(fix16_div(-3, fix16_from_int(-2)), 2);
-    ASSERT_EQ_INT(fix16_div(2, 0x7FFF), 4);
-    ASSERT_EQ_INT(fix16_div(-2, 0x7FFF), -4);
-    ASSERT_EQ_INT(fix16_div(2, 0x8001), 4);
-    ASSERT_EQ_INT(fix16_div(-2, 0x8001), -4);
+    ASSERT_EQ_INT(fix16_div(0, 10), (int32_t)0);
+    ASSERT_EQ_INT(fix16_div(1, fix16_from_int(2)), (int32_t)1);
+    ASSERT_EQ_INT(fix16_div(-1, fix16_from_int(2)), (int32_t)-1);
+    ASSERT_EQ_INT(fix16_div(1, fix16_from_int(-2)), (int32_t)-1);
+    ASSERT_EQ_INT(fix16_div(-1, fix16_from_int(-2)), (int32_t)1);
+    ASSERT_EQ_INT(fix16_div(3, fix16_from_int(2)), (int32_t)2);
+    ASSERT_EQ_INT(fix16_div(-3, fix16_from_int(2)), (int32_t)-2);
+    ASSERT_EQ_INT(fix16_div(3, fix16_from_int(-2)), (int32_t)-2);
+    ASSERT_EQ_INT(fix16_div(-3, fix16_from_int(-2)), (int32_t)2);
+    ASSERT_EQ_INT(fix16_div(2, 0x7FFF), (int32_t)4);
+    ASSERT_EQ_INT(fix16_div(-2, 0x7FFF), (int32_t)-4);
+    ASSERT_EQ_INT(fix16_div(2, 0x8001), (int32_t)4);
+    ASSERT_EQ_INT(fix16_div(-2, 0x8001), (int32_t)-4);
 #endif
 
     return 0;
@@ -193,7 +190,8 @@ int test_div_short()
             else
             {
                 ASSERT_NEAR_DOUBLE(fresult, fix16_to_dbl(result),
-                                   fix16_to_dbl(fix16_eps), "%i / %i \n", a, b);
+                                   fix16_to_dbl(fix16_eps),
+                                   "%" PRIi32 " / %" PRIi32 " \n", a, b);
             }
         }
     }

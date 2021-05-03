@@ -1,6 +1,10 @@
 #include "fix16.h"
 #include "int64.h"
 
+#ifdef FIXMATH_OPTIMIZE_AVR
+#include <stdfix.h>
+#endif
+
 
 /* Subtraction and addition with overflow detection.
  * The versions without overflow detection are inlined in the header.
@@ -254,15 +258,17 @@ fix16_t fix16_mul(fix16_t inArg0, fix16_t inArg1)
  * Uses 8*8->16bit multiplications, and also skips any bytes that
  * are zero.
  */
-#if defined(FIXMATH_OPTIMIZE_8BIT)
+#if defined(FIXMATH_OPTIMIZE_AVR)
 fix16_t fix16_mul(fix16_t inArg0, fix16_t inArg1)
 {
 
 #ifdef FIXMATH_NO_OVERFLOW
     _Accum result = __mulsa3(inArg0,inArg1);
 #else
-    _Accum result = __ssmulsa3(inArg0,inArg1);
+    //_Accum result = __ssmulsa3(inArg0,inArg1);
 #endif
+
+    _Accum result = (_Accum)inArg0 * (_Accum)inArg1;
 
     return result;
 }
